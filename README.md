@@ -15,12 +15,12 @@ Sistema de deteccion de incendio desarrollado con un Arduino UNO sobre la plataf
 
 ## Comenzando 🚀
 ***
-La alarma se dispara al detectar una determinada temperatura. Al hacerlo simula una respuesta activando un cervo motor y un mensaje de alerta por el display LCD 16x2.
-- La alarma se puede apagar/encender con el control IR (infra rojo), presionando el boton rojo.
-- Consta de una resistencia ajustable para regular la incentidad de brillo del LCD   
-- Una luz led verde que al encenderse indica que la la alarma esta encendida pero no se detectó incendio.La luz roja se prende cuando detecta indencio. Cuando el sistema esta apagado, los leds y el display LCD permaneces apagados.  
+La alarma se dispara al detectar una determinada temperatura. Al hacerlo simula una respuesta activando un servomotor y un mensaje de alerta por el display LCD 16x2.
+- La alarma se puede apagar/encender con el control IR (infrarrojo), presionando el boton rojo.
+- Consta de una resistencia ajustable para regular la incentidad de brillo del LCD.   
+- Una luz led verde que al encenderse indica que la la alarma esta encendida pero no se detectó incendio.La luz roja se prende cuando detecta indencio. Cuando el sistema esta apagado, los leds y el display LCD tambien permanecen apagados.  
 - En el display se muestra la estación del año (en funcion de unas temperaturas preestablecidas) y la temperatura altual. Si la temperatura supera los 60ºC se activa la alarma y muestra un mensaje de alerta.
-- Si hay deteccion de incendio el servo motor se se posiciona a 180 grados( hacia la aprte superior en la imagen). 
+- Si hay deteccion de incendio el servomotor se posiciona a 180 grados( hacia la parte superior en la imagen). 
  
 
 Las siguientes instrucciones te permitirán comprender el funcionamiento del proyecto. Además, se incluye el enlace del proyecto en TinkerCad para poder copiarlo y modificarlo: 
@@ -46,9 +46,9 @@ Componentes necesarios:
 ## Código del programa:
   Principales parámetros:
 - system_status:  
-Es un booleano que representa el estado de todo el sistema (on/off). Se activa y desactiva con un boton del control remoto. 
+Es un booleano que representa el estado de todo el sistema (on/off). Si su valor en false todo el sistema permanece apagado. Se activa y desactiva con un boton rojo del control remoto. 
 - alarm_status:  
-tambien un booleano que indica si detectó un incendio. Esta se activa en función de la temperatura_limite. Esta esta seteada en 60.0 ºC.  
+Indica ele stado de la alarma de incendio y su valor en true cuando la temperatura detectada supere una límite de 60.0 ºC.
 
 * * *
 
@@ -447,8 +447,9 @@ void UpdateServo(bool alarm_status,
 }
 ~~~
 - Si el sistema esta encendido y la alarma también posiciona el servo a 180º, sinó lo deja en la posicion de reposo (0º).
+- servoMotor.write(X) sirve para manejar el servo, recibe como parámetros un entero entre 0 y 180 que representan los grados de amplitud de movimiento del mismo.
 
-### Estación en función d ela temperatura:
+### Estación en función de la temperatura:
 ~~~ C
 void UpdateServo(bool alarm_status,
                  bool system_status)
@@ -509,7 +510,7 @@ void UpdateLcd(float temperatura,
 }
 
 ~~~
-- Si el systema es prendido y la larma de incencio desactivada muestra la estación del año y la temperatura enºC.
+- Si el systema es prendido y la larma de incendio desactivada muestra la estación del año y la temperatura enºC.
 - Si se activa la alarma muestra un mensaje de larta y la temperatura.
 - Si el sistema esta apagado, te lo muestra, claro.
 
@@ -550,7 +551,7 @@ void loop()
 ## 🤖 Link al proyecto 
 ---
 
- Proyecto [Link colaborador Tinkercad]([https://www.tinkercad.com/things/11JbVPn2ngt](https://www.tinkercad.com/things/cdLLI2wjXa5-detector-incendio/editel?sharecode=dMTs8mi-D6_ne6f99F5Q16aijBYtbci-BFEqyaH6hBY) "Enlace del proyecto en Tinkercad") TinkerCad.
+ Proyecto [Link de colaborador Tinkercad]([https://www.tinkercad.com/things/11JbVPn2ngt](https://www.tinkercad.com/things/cdLLI2wjXa5-detector-incendio/editel?sharecode=dMTs8mi-D6_ne6f99F5Q16aijBYtbci-BFEqyaH6hBY) "Enlace del proyecto en Tinkercad").
  - - - 
 
 ##  📘 Fuentes
