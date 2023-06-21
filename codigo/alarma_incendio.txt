@@ -1,0 +1,269 @@
+/*
+Fernando Malinowski
+IR Remote guide:
+https://roboticsbackend.com/arduino-ir-remote-controller-tutorial-setup-and-map-buttons/
+LCD 12x2 gruide:
+https://www.electrogeekshop.com/como-usar-un-lcd-de-16x2-caracteres-con-arduino/
+*/
+
+#define sensor_temp A0
+#define led_rojo 13
+#define led_verde 12
+#define sensor_ir 11
+
+
+#define IR_BUTTON_0 12
+#define IR_BUTTON_1 16
+#define IR_BUTTON_2 17
+#define IR_BUTTON_3 18
+#define IR_BUTTON_4 20
+#define IR_BUTTON_5 21
+#define IR_BUTTON_6 22
+#define IR_BUTTON_7 24
+#define IR_BUTTON_8 25
+#define IR_BUTTON_9 26
+#define IR_BUTTON_ON 0
+
+float lectura;
+float voltaje;
+float temperatura;
+float temperatura_limite = 60.0;
+bool alarm_status = false;
+bool system_status = true;
+
+// Incluímos la librería para poder controlar el servo
+#include <LiquidCrystal.h>
+#include <Servo.h>
+#include <IRremote.h>
+
+//Declaraciond e variable que controla el servo
+Servo servoMotor;
+
+
+
+//LCD
+LiquidCrystal lcd = LiquidCrystal(5,6,7,8,9,10);
+
+byte grados[8] = {
+  B01110,
+  B01010,
+  B01110,
+  B00000,
+  B00000,
+  B00000,
+  B00000,
+};
+
+//Sensor IR
+int RECV_PIN = 11;
+IRrecv irrecv(RECV_PIN); //creamos la variable u objeto para el receptor IR
+decode_results Valor;
+
+void setup()
+{
+  Serial.begin(9600);
+  //PWM
+  pinMode(led_rojo, OUTPUT);
+  pinMode(led_verde, OUTPUT);
+  //iniciamos el servo en el pin PWM 9
+  servoMotor.attach(4);
+  //Inicializamos el ángulo en 0
+  servoMotor.write(0);
+  lcd.begin(16,2);
+  
+  //setup sensor IR
+  // inicializamos la recepción de datos
+  IrReceiver.begin(sensor_ir); 
+}
+
+bool UpdateSistemStatus(bool system_status)
+{
+   if (IrReceiver.decode())
+  {
+    Serial.println(IrReceiver.decodedIRData.command);
+    switch (IrReceiver.decodedIRData.command)
+    {
+      case 0:
+      	Serial.println("On/OFF");
+      	system_status = !system_status;
+      	break;
+    }
+    IrReceiver.resume();
+  }
+  return system_status;
+}
+
+float MedirTension(int sensor_temp)
+{
+  float lectura = analogRead(sensor_temp);
+  float voltaje = (5.0/1024)*lectura;
+  return voltaje;
+}
+
+float ConvertirTemp(float tension)
+{
+  temperatura = (tension*100)-50;
+  return temperatura;
+}
+
+float UpdateTemperature(int pin_sensor)
+{
+  float tension = MedirTension(pin_sensor);
+  float temperatura = ConvertirTemp(tension);
+  return temperatura;
+}
+
+bool UpdateAlarmStatus(float temperatura,
+                       float max_temp,
+                       bool alarm_status,
+                      bool system_status)
+{
+  if (system_status && temperatura > max_temp)
+  {
+    alarm_status = true;
+  }
+   else
+    {
+     alarm_status = false;
+    }
+  return alarm_status;
+}
+
+void UpdateServo(bool alarm_status,
+                 bool system_status)
+{
+  if (alarm_status)
+  {
+    {
+       servoMotor.write(180);
+    }
+  }
+  else
+  {
+    servoMotor.write(0);
+  }
+}
+
+void UpdateLeds(bool alarm_status,
+                bool system_status)
+{
+  if (system_status)
+  {
+      if (!alarm_status)
+    {
+      digitalWrite(led_verde, 1);
+      digitalWrite(led_rojo, 0);
+
+    } 
+    else
+    {
+      digitalWrite(led_rojo, 1);
+      digitalWrite(led_verde, 0);
+    }
+  }
+  else
+  {
+    digitalWrite(led_verde, 0);
+    digitalWrite(led_rojo, 0);
+  }  
+}
+
+String PredecirEstacion(float temperatura)
+{
+  String estacion = "invierno";
+  if (temperatura < 13.0)
+  {
+    estacion = "Invierno.";
+  } 
+  else
+  {
+    if (temperatura >= 13.0 && temperatura < 20.0)
+    {
+      estacion = "Otoño.";
+    }
+    else
+    {
+      if (temperatura >= 20.0 && temperatura < 26.0)
+      {
+        estacion = "Primavera.";
+      }
+      else
+      {
+          if (temperatura > 26.0)
+        {
+          estacion = "Verano.";
+        }
+      }
+    }
+  }
+  return estacion;
+}
+
+void UpdateLcd(float temperatura,
+               bool alarm_status,
+               bool system_status)
+{
+  
+  lcd.clear();
+  
+  if (system_status)
+  {
+      if (!alarm_status)
+    {
+      String estacion = PredecirEstacion(temperatura);
+      lcd.setCursor(3,0);
+      lcd.print(estacion);
+    }
+    else
+    {
+      lcd.setCursor(3,0);
+      lcd.print("--ALERTA--");
+    }
+
+    lcd.setCursor(4,1);
+    lcd.print(temperatura, 1);
+    lcd.createChar(0,grados);
+    lcd.setCursor(9,1);
+    lcd.write(byte(0));
+    lcd.setCursor(10,1);
+    lcd.print("C");
+    
+  }
+  else
+  {
+    lcd.setCursor(4,0);
+    lcd.print("SYSTEMA");
+    lcd.setCursor(4,1);
+    lcd.print("APAGADO");
+  }
+}
+
+
+  
+void loop()
+{ 
+  temperatura = UpdateTemperature(sensor_temp);
+  
+  alarm_status = UpdateAlarmStatus(temperatura,
+                                   temperatura_limite,
+                                   alarm_status,
+                                   system_status);
+  
+  UpdateLcd(temperatura,
+            alarm_status,
+            system_status);
+    
+  Serial.println(temperatura);
+  
+  UpdateLeds(alarm_status,system_status);
+  
+  UpdateServo(alarm_status,
+              system_status);
+    
+  system_status = UpdateSistemStatus(system_status);
+  Serial.print("alarm: ");
+  Serial.println(alarm_status);
+  Serial.print("system: ");
+  Serial.println(system_status);
+  delay(200);
+}
