@@ -10,9 +10,6 @@ Sistema de deteccion de incendio desarrollado con un Arduino UNO sobre la plataf
 ## Autor: ✒️
 ***
 * **Fernando Malinowski (DIv 1ºG)** 
-
-
-
 ***
 ![Imagen no encontrada](./img/Detector_incendio.png " 1º G. UTN FRA.")
 
@@ -28,7 +25,7 @@ La alarma se dispara al detectar una determinada temperatura. Al hacerlo simula 
 
 Las siguientes instrucciones te permitirán comprender el funcionamiento del proyecto. Además, se incluye el enlace del proyecto en TinkerCad para poder copiarlo y modificarlo: 
 
-[Link del proyecto en Tinkercad ](https://www.tinkercad.com/things/cdLLI2wjXa5?sharecode=BZH8Aqm1zEYz31H5eDzE2P_rcCQk3Ddp8KysrEz6HUo "Enlace del proyecto en Tinkercad")
+[Link del proyecto en Tinkercad (para copiar, no colaborador)](https://www.tinkercad.com/things/cdLLI2wjXa5?sharecode=BZH8Aqm1zEYz31H5eDzE2P_rcCQk3Ddp8KysrEz6HUo "Enlace del proyecto en Tinkercad")
 
 ## Consigna 🔩
 El objetivo de este proyecto es diseñar un sistema de incendio utilizando Arduino que pueda
@@ -57,11 +54,7 @@ tambien un booleano que indica si detectó un incendio. Esta se activa en funci�
 
  ~~~ C (Lenguaje del código)
 /*
-Fernando Malinowski
-IR Remote guide:
-https://roboticsbackend.com/arduino-ir-remote-controller-tutorial-setup-and-map-buttons/
-LCD 12x2 gruide:
-https://www.electrogeekshop.com/como-usar-un-lcd-de-16x2-caracteres-con-arduino/
+Fernando Malinowski Div 1º G
 */
 
 #define sensor_temp A0
@@ -557,7 +550,7 @@ void loop()
 ## 🤖 Link al proyecto 
 ---
 
- Proyecto [Estaciones de subte ](https://www.tinkercad.com/things/11JbVPn2ngt "Enlace del proyecto en Tinkercad") TinkerCad.
+ Proyecto [Link colaborador Tinkercad]([https://www.tinkercad.com/things/11JbVPn2ngt](https://www.tinkercad.com/things/cdLLI2wjXa5-detector-incendio/editel?sharecode=dMTs8mi-D6_ne6f99F5Q16aijBYtbci-BFEqyaH6hBY) "Enlace del proyecto en Tinkercad") TinkerCad.
  - - - 
 
 ##  📘 Fuentes
